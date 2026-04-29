@@ -1,1 +1,744 @@
-foo
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahorro MXN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #070b14;
+      --bg2:     #0d1320;
+      --bg3:     #131b2e;
+      --border:  #1e2d45;
+      --text:    #c8d4e8;
+      --dim:     #4a6080;
+      --green:   #7fd4a0;
+      --blue:    #38bdf8;
+      --purple:  #a78bfa;
+      --yellow:  #fbbf24;
+      --red:     #f87171;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px 10px;
+    }
+    header h1 {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--green);
+      letter-spacing: .06em;
+    }
+    header span {
+      font-size: 11px;
+      color: var(--dim);
+      margin-left: 8px;
+    }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      display: flex;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      gap: 2px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--dim);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 10px 14px 8px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+    /* ── Tab panels ── */
+    .tab-panel { display: none; padding: 24px 20px; max-width: 920px; margin: 0 auto; }
+    .tab-panel.active { display: block; }
+
+    /* ── Metric cards ── */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .metric-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+    }
+    .metric-label {
+      color: var(--dim);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 6px;
+    }
+    .metric-value { font-size: 20px; font-weight: 500; }
+
+    /* ── Section title ── */
+    .section-title {
+      color: var(--dim);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 10px;
+    }
+
+    /* ── Distribution bar ── */
+    .dist-bar {
+      display: flex;
+      height: 5px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 22px;
+      gap: 1px;
+    }
+    .dist-seg { height: 100%; border-radius: 2px; transition: opacity .15s; }
+    .dist-seg:hover { opacity: .7; }
+
+    /* ── Account table ── */
+    .account-table { width: 100%; border-collapse: collapse; }
+    .account-table th {
+      text-align: left;
+      color: var(--dim);
+      font-size: 10px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .account-table td {
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .account-table tr:last-child td { border-bottom: none; }
+    .account-table tbody tr:hover td { background: var(--bg2); }
+
+    /* ── Inline edit ── */
+    .editable {
+      cursor: text;
+      border-radius: 3px;
+      padding: 2px 5px;
+      transition: background .12s;
+      display: inline-block;
+    }
+    .editable:hover { background: var(--bg3); }
+    .editable-input {
+      background: var(--bg3);
+      border: 1px solid var(--blue);
+      border-radius: 3px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: inherit;
+      padding: 2px 6px;
+      outline: none;
+      min-width: 80px;
+    }
+
+    /* ── Delete button ── */
+    .btn-delete {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--red);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      transition: background .12s;
+    }
+    .btn-delete:hover { background: #1a0f0f; border-color: var(--red); }
+
+    /* ── Forms ── */
+    .form-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      max-width: 380px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      color: var(--dim);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 5px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 8px 10px;
+      outline: none;
+      transition: border-color .12s;
+    }
+    .form-input:focus { border-color: var(--blue); }
+    .form-input.error { border-color: var(--red); }
+
+    .btn-primary {
+      background: var(--bg3);
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      color: var(--green);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 8px 20px;
+      transition: background .12s;
+    }
+    .btn-primary:hover { background: #0d1e18; }
+
+    /* ── Toast ── */
+    .toast {
+      display: inline-block;
+      color: var(--green);
+      font-size: 11px;
+      margin-left: 12px;
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* ── Projection toggle ── */
+    .proj-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
+    .toggle-btn {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--dim);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 6px 14px;
+      transition: all .12s;
+    }
+    .toggle-btn.active { border-color: var(--purple); color: var(--purple); }
+
+    /* ── Projection table ── */
+    .proj-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .proj-table th {
+      text-align: right;
+      color: var(--dim);
+      font-size: 10px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .proj-table th:first-child { text-align: left; }
+    .proj-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+    }
+    .proj-table td:first-child { text-align: left; color: var(--dim); }
+    .proj-table tr:last-child td { border-bottom: none; }
+    .proj-table tbody tr:hover td { background: var(--bg2); }
+
+    /* ── Empty state ── */
+    .empty { color: var(--dim); padding: 20px 0; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>ahorro.mxn<span>tracker de cuentas de ahorro</span></h1>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+  <button class="tab-btn" data-tab="accounts">Agregar/Editar Cuenta</button>
+  <button class="tab-btn" data-tab="salary">Salario Quincenal</button>
+  <button class="tab-btn" data-tab="projection">Proyección 365 días</button>
+</nav>
+
+<!-- ── Dashboard ── -->
+<div id="tab-dashboard" class="tab-panel active">
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-label">Saldo total consolidado</div>
+      <div class="metric-value" id="m-total" style="color:var(--green)">$0.00</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Tasa promedio ponderada</div>
+      <div class="metric-value" id="m-rate" style="color:var(--blue)">0.0000%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Rendimiento diario estimado</div>
+      <div class="metric-value" id="m-daily" style="color:var(--purple)">$0.00</div>
+    </div>
+  </div>
+
+  <div id="dist-bar-wrap"></div>
+
+  <p class="section-title">Cuentas de ahorro</p>
+  <div id="account-list"></div>
+</div>
+
+<!-- ── Add/Edit Account ── -->
+<div id="tab-accounts" class="tab-panel">
+  <p class="section-title" style="margin-bottom:16px">Nueva cuenta</p>
+  <div class="form-card">
+    <form id="account-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="f-name">Entidad / Nombre</label>
+        <input class="form-input" id="f-name" type="text" placeholder="CETES Directo, GBM+, Nu…" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-balance">Saldo actual (MXN)</label>
+        <input class="form-input" id="f-balance" type="number" min="0" step="0.01" placeholder="10000.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-rate">Tasa de rendimiento anual (%)</label>
+        <input class="form-input" id="f-rate" type="number" min="0" step="0.001" placeholder="12.50">
+      </div>
+      <button class="btn-primary" type="submit">Agregar cuenta</button>
+      <span class="toast" id="account-toast">✓ Guardado</span>
+    </form>
+  </div>
+</div>
+
+<!-- ── Salary ── -->
+<div id="tab-salary" class="tab-panel">
+  <p class="section-title" style="margin-bottom:16px">Nómina quincenal</p>
+  <div class="form-card">
+    <form id="salary-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="s-amount">Importe quincenal (MXN)</label>
+        <input class="form-input" id="s-amount" type="number" min="0" step="0.01" placeholder="8000.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="s-date">Fecha del primer depósito</label>
+        <input class="form-input" id="s-date" type="date">
+      </div>
+      <button class="btn-primary" type="submit">Guardar</button>
+      <span class="toast" id="salary-toast">✓ Guardado</span>
+    </form>
+  </div>
+</div>
+
+<!-- ── Projection ── -->
+<div id="tab-projection" class="tab-panel">
+  <div class="proj-toggle">
+    <button class="toggle-btn active" id="btn-milestones">Hitos clave</button>
+    <button class="toggle-btn" id="btn-daily">Día a día</button>
+  </div>
+  <div id="proj-table-wrap"></div>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+//  localStorage layer
+// ═══════════════════════════════════════════════════════════
+
+function loadAccounts() {
+  try { return JSON.parse(localStorage.getItem('savings_accounts')) || []; }
+  catch { return []; }
+}
+
+function saveAccounts(list) {
+  localStorage.setItem('savings_accounts', JSON.stringify(list));
+}
+
+function loadSalaryConfig() {
+  try { return JSON.parse(localStorage.getItem('salary_config')); }
+  catch { return null; }
+}
+
+function saveSalaryConfig(cfg) {
+  localStorage.setItem('salary_config', JSON.stringify(cfg));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Yield calculator engine
+// ═══════════════════════════════════════════════════════════
+
+function dailyRate(annualRate) {
+  return Math.pow(1 + annualRate / 100, 1 / 365) - 1;
+}
+
+function accountDailyYield(account) {
+  return account.balance * dailyRate(account.rate);
+}
+
+function totalBalance(accounts) {
+  return accounts.reduce((s, a) => s + a.balance, 0);
+}
+
+function weightedAverageRate(accounts) {
+  const bal = totalBalance(accounts);
+  if (bal === 0) return 0;
+  return accounts.reduce((s, a) => s + a.balance * a.rate, 0) / bal;
+}
+
+function totalDailyYield(accounts) {
+  return accounts.reduce((s, a) => s + accountDailyYield(a), 0);
+}
+
+const mxnFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
+function formatMXN(v) { return mxnFmt.format(v); }
+
+// ═══════════════════════════════════════════════════════════
+//  Projection engine
+// ═══════════════════════════════════════════════════════════
+
+function buildDepositSchedule(salaryConfig) {
+  const map = new Map();
+  if (!salaryConfig || !salaryConfig.amount || !salaryConfig.startDate) return map;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [y, m, d] = salaryConfig.startDate.split('-').map(Number);
+  let cur = new Date(y, m - 1, d);
+
+  while (true) {
+    const dayIdx = Math.round((cur - today) / 86400000);
+    if (dayIdx > 365) break;
+    if (dayIdx >= 1) {
+      map.set(dayIdx, (map.get(dayIdx) || 0) + Number(salaryConfig.amount));
+    }
+    cur = new Date(cur);
+    cur.setDate(cur.getDate() + 14);
+  }
+
+  return map;
+}
+
+function project365(accounts, salaryConfig) {
+  const wRate    = weightedAverageRate(accounts);
+  const wDaily   = dailyRate(wRate);
+  const schedule = buildDepositSchedule(salaryConfig);
+  const initial  = totalBalance(accounts);
+
+  const rows = [];
+  let balance          = initial;
+  let cumulativePayroll = 0;
+
+  for (let day = 1; day <= 365; day++) {
+    const deposit        = schedule.get(day) || 0;
+    const dailyYieldAmt  = balance * wDaily;
+    balance              = balance + dailyYieldAmt + deposit;
+    cumulativePayroll   += deposit;
+    const pureYield      = balance - initial - cumulativePayroll;
+    rows.push({ day, balance, pureYield, cumulativePayroll, dailyYieldAmount: dailyYieldAmt });
+  }
+
+  return rows;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Accent colors (cycle for multi-account bar / labels)
+// ═══════════════════════════════════════════════════════════
+
+const ACCENTS = ['#7fd4a0', '#38bdf8', '#a78bfa', '#fbbf24', '#f87171', '#fb923c', '#34d399', '#60a5fa'];
+const accentFor = i => ACCENTS[i % ACCENTS.length];
+
+// ═══════════════════════════════════════════════════════════
+//  App state
+// ═══════════════════════════════════════════════════════════
+
+let accounts = loadAccounts();
+
+// ═══════════════════════════════════════════════════════════
+//  Utility
+// ═══════════════════════════════════════════════════════════
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Dashboard renderer
+// ═══════════════════════════════════════════════════════════
+
+function renderDashboard() {
+  const bal  = totalBalance(accounts);
+  const rate = weightedAverageRate(accounts);
+  const yld  = totalDailyYield(accounts);
+
+  document.getElementById('m-total').textContent = formatMXN(bal);
+  document.getElementById('m-rate').textContent  = rate.toFixed(4) + '%';
+  document.getElementById('m-daily').textContent = formatMXN(yld);
+
+  // Proportional distribution bar (only when ≥2 accounts)
+  const barWrap = document.getElementById('dist-bar-wrap');
+  if (accounts.length >= 2 && bal > 0) {
+    const segs = accounts.map((a, i) => {
+      const pct = (a.balance / bal * 100).toFixed(3);
+      return `<div class="dist-seg"
+                   title="${escHtml(a.name)}: ${formatMXN(a.balance)} (${pct}%)"
+                   style="width:${pct}%;background:${accentFor(i)}"></div>`;
+    }).join('');
+    barWrap.innerHTML = `<div class="dist-bar">${segs}</div>`;
+  } else {
+    barWrap.innerHTML = '';
+  }
+
+  // Account list
+  const listEl = document.getElementById('account-list');
+  if (accounts.length === 0) {
+    listEl.innerHTML = '<p class="empty">Sin cuentas. Agrega una en la pestaña "Agregar/Editar Cuenta".</p>';
+    return;
+  }
+
+  const rows = accounts.map((a, i) => {
+    const color = accentFor(i);
+    const dy    = accountDailyYield(a);
+    return `<tr>
+      <td><span class="editable" data-id="${escHtml(a.id)}" data-field="name"
+               style="color:${color}">${escHtml(a.name)}</span></td>
+      <td><span class="editable" data-id="${escHtml(a.id)}" data-field="balance"
+               style="color:var(--green)">${formatMXN(a.balance)}</span></td>
+      <td><span class="editable" data-id="${escHtml(a.id)}" data-field="rate"
+               style="color:var(--blue)">${a.rate.toFixed(4)}%</span></td>
+      <td style="color:var(--purple)">${formatMXN(dy)}</td>
+      <td><button class="btn-delete" data-id="${escHtml(a.id)}" title="Eliminar cuenta">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  listEl.innerHTML = `
+    <table class="account-table">
+      <thead><tr>
+        <th>Entidad</th>
+        <th>Saldo actual</th>
+        <th>Tasa anual</th>
+        <th>Rend. diario</th>
+        <th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Inline edit — event delegation on #account-list
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById('account-list').addEventListener('click', e => {
+  const span = e.target.closest('.editable');
+  if (!span) return;
+
+  const id    = span.dataset.id;
+  const field = span.dataset.field;
+  const acct  = accounts.find(a => a.id === id);
+  if (!acct) return;
+
+  const rawVal = field === 'name' ? acct.name : field === 'balance' ? acct.balance : acct.rate;
+
+  const input = document.createElement('input');
+  input.className = 'editable-input';
+  input.type = field === 'name' ? 'text' : 'number';
+  if (field !== 'name') { input.min = '0'; input.step = '0.001'; }
+  input.value = rawVal;
+  span.replaceWith(input);
+  input.focus();
+  input.select();
+
+  let done = false;
+
+  const commit = () => {
+    if (done) return;
+    done = true;
+    const v = input.value.trim();
+    if      (field === 'name'    && v)                              acct.name    = v;
+    else if (field === 'balance' && v !== '' && !isNaN(v) && +v >= 0) acct.balance = parseFloat(v);
+    else if (field === 'rate'    && v !== '' && !isNaN(v) && +v >= 0) acct.rate    = parseFloat(v);
+    saveAccounts(accounts);
+    renderDashboard();
+  };
+
+  const cancel = () => {
+    if (done) return;
+    done = true;
+    renderDashboard();
+  };
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter')  input.blur();
+    if (ev.key === 'Escape') cancel();
+  });
+});
+
+// Delete — event delegation
+document.getElementById('account-list').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-delete');
+  if (!btn) return;
+  accounts = accounts.filter(a => a.id !== btn.dataset.id);
+  saveAccounts(accounts);
+  renderDashboard();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  Add account form
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById('account-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const nameEl = document.getElementById('f-name');
+  const balEl  = document.getElementById('f-balance');
+  const rateEl = document.getElementById('f-rate');
+
+  [nameEl, balEl, rateEl].forEach(el => el.classList.remove('error'));
+  let ok = true;
+  if (!nameEl.value.trim())                                      { nameEl.classList.add('error'); ok = false; }
+  if (balEl.value  === '' || isNaN(balEl.value)  || +balEl.value  < 0) { balEl.classList.add('error');  ok = false; }
+  if (rateEl.value === '' || isNaN(rateEl.value) || +rateEl.value < 0) { rateEl.classList.add('error'); ok = false; }
+  if (!ok) return;
+
+  accounts.push({
+    id:      crypto.randomUUID(),
+    name:    nameEl.value.trim(),
+    balance: parseFloat(balEl.value),
+    rate:    parseFloat(rateEl.value),
+  });
+
+  saveAccounts(accounts);
+  renderDashboard();
+
+  nameEl.value = '';
+  balEl.value  = '';
+  rateEl.value = '';
+  showToast('account-toast');
+});
+
+// ═══════════════════════════════════════════════════════════
+//  Salary form
+// ═══════════════════════════════════════════════════════════
+
+function populateSalaryForm() {
+  const cfg = loadSalaryConfig();
+  if (!cfg) return;
+  document.getElementById('s-amount').value = cfg.amount    ?? '';
+  document.getElementById('s-date').value   = cfg.startDate ?? '';
+}
+
+document.getElementById('salary-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const amount    = document.getElementById('s-amount').value;
+  const startDate = document.getElementById('s-date').value;
+  if (!amount || !startDate) return;
+  saveSalaryConfig({ amount: parseFloat(amount), startDate, frequency: 'biweekly' });
+  showToast('salary-toast');
+});
+
+// ═══════════════════════════════════════════════════════════
+//  Projection renderer
+// ═══════════════════════════════════════════════════════════
+
+const MILESTONES = new Set([1, 7, 15, 30, 45, 60, 90, 120, 150, 180, 270, 365]);
+let projMode = 'milestones';
+
+function renderProjection() {
+  const all  = project365(accounts, loadSalaryConfig());
+  const rows = projMode === 'milestones' ? all.filter(r => MILESTONES.has(r.day)) : all;
+
+  const tbody = rows.map(r => `
+    <tr>
+      <td>${r.day}</td>
+      <td style="color:var(--green)">${formatMXN(r.balance)}</td>
+      <td style="color:var(--purple)">${formatMXN(r.pureYield)}</td>
+      <td style="color:var(--yellow)">${formatMXN(r.cumulativePayroll)}</td>
+      <td style="color:var(--purple)">${formatMXN(r.dailyYieldAmount)}</td>
+    </tr>`).join('');
+
+  document.getElementById('proj-table-wrap').innerHTML = `
+    <table class="proj-table">
+      <thead><tr>
+        <th>Día</th>
+        <th>Saldo acumulado</th>
+        <th>Rendimiento puro</th>
+        <th>Nómina acumulada</th>
+        <th>Rendimiento del día</th>
+      </tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>`;
+}
+
+document.getElementById('btn-milestones').addEventListener('click', () => {
+  projMode = 'milestones';
+  document.getElementById('btn-milestones').classList.add('active');
+  document.getElementById('btn-daily').classList.remove('active');
+  renderProjection();
+});
+
+document.getElementById('btn-daily').addEventListener('click', () => {
+  projMode = 'daily';
+  document.getElementById('btn-daily').classList.add('active');
+  document.getElementById('btn-milestones').classList.remove('active');
+  renderProjection();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  Tab switching
+// ═══════════════════════════════════════════════════════════
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'projection') renderProjection();
+    if (btn.dataset.tab === 'salary')     populateSalaryForm();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  Toast
+// ═══════════════════════════════════════════════════════════
+
+function showToast(id) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Init
+// ═══════════════════════════════════════════════════════════
+
+renderDashboard();
+</script>
+</body>
+</html>
